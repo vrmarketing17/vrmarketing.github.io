@@ -7,6 +7,11 @@
     <script src="https://unpkg.com/aframe-animation-component@%5E3.2.x/dist/aframe-animation-component.min.js"></script>
     <script src="https://rawgit.com/mayognaise/aframe-mouse-cursor-component/master/dist/aframe-mouse-cursor-component.min.js"></script>
 
+        <!--Cursor Drag View-->
+    <script src="https://rawgit.com/mayognaise/aframe-drag-look-controls-component/master/dist/aframe-drag-look-controls-component.min.js"></script>
+    <!--Cursor click to select-->
+    <script src="https://rawgit.com/mayognaise/aframe-mouse-cursor-component/master/dist/aframe-mouse-cursor-component.min.js"></script>
+
   </head>
   <body>
 
@@ -166,7 +171,7 @@
     <a-camera id="Camera" position="0 0 0" wasd-controls-enabled="false">
     	<a-cursor id="cursor"
           fuse="true"
-          raycaster="objects: .clickable" scale='.7 .7 .7' color="red">
+          raycaster="objects: .clickable" drag-look-controls look-controls mouse-cursor scale='.7 .7 .7' color="red">
           <a-animation attribute="scale" from="1 1 1" to="2 2 2" dur="400" direction="alternate" repeat="3" begin="pulse" end="normal" easing="ease-in"></a-animation>
           <a-animation attribute="scale" to="1 1 1" begin="normal" easing="ease-in"></a-animation>
           </a-cursor>
@@ -179,6 +184,8 @@
   	<a-image id="welcome" src="./Textures/api_360/instructions.png" position="0 1.6 -2" scale="2 1 1" transparent="true">
   		<a-image class="clickable" src="./Textures/api_360/exit.png" position=".458 .45 .01" scale=".1 .1 .1" visible="true" transparent="false" click-handler="on: click; target: #welcome; onOff: false"></a-image>
   	</a-image>
+
+  	<a-plane id="circleLogo" src="./Textures/api_360/ych_cirlce.png" position="0 0 0" scale="1.47 1.47 1.47" transparent="true" rotation="-90 0 0"></a-plane>
 
     </a-scene>
   </body>
