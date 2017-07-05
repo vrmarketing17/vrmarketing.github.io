@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>API Source - Factory Tour</title>
+    <meta name="API Source Tour" content="Factory Tour">
+    <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-animation-component@%5E3.2.x/dist/aframe-animation-component.min.js"></script>
+    <script src="https://rawgit.com/mayognaise/aframe-mouse-cursor-component/master/dist/aframe-mouse-cursor-component.min.js"></script>
+
+  </head>
+  <body>
+
+  	<script>
+
+  		//keeps track of the current 360 picture and description
+  		var cur = 0;
+
+  		AFRAME.registerComponent('set-image', {
+		  schema: {
+		    on: {type: 'string'},
+		    dir: {type: 'number'},
+		    dur: {type: 'number', default: 300}
+		  },
+
+		  init: function () {
+		    var data = this.data;
+		    var el = this.el;
+
+		    //contains the order of 360 images and descriptions
+		    var imgs = ['#boxing', '#paint', '#screenWash', '#printing']
+		    var desc = ['#boxDesc', '#paintDesc', '#screenWashDesc', '#printingDesc']
+		    var pois = ['#boxingPOI', '#paintPOI', '#screenWashPOI', '#printingPOI']
+
+		    //makes cursor pulse if it is in the interaction zone
+		    el.addEventListener('mouseenter', function(){
+		    	cursor.emit('pulse');
+		    });
+
+		    //places mouse back to normal if it leaves the interaction zone
+		   	el.addEventListener('mouseleave', function(){
+		    	cursor.emit('normal');
+		    });
+
+		    el.addEventListener(data.on, function () {
+
+		    	//gets the current sky pic that is visible
+		    	var skyPrev = document.querySelector(imgs[cur%4]);
+		    	//gets the current description that is visible
+		    	var descPrev = document.querySelector(desc[cur%4]);
+		    	//gets the entity which holds all pois that are currently visible
+		    	var poiEntityPrev = document.querySelector(pois[cur%4]);
+				
+				//updates to either the next or previous picture
+				cur = cur+data.dir;
+
+		    	if(cur == -1){
+		      		
+		      		cur = 3;
+		    	}
+
+		    	//gets the new skypic
+		    	var skyCur = document.querySelector(imgs[cur%4]);
+		    	//gets the new description to display
+		    	var descCur = document.querySelector(desc[cur%4]);
+		    	//gets the entity which holds all pois for this current location
+		    	var poiEntityCur = document.querySelector(pois[cur%4]);
+
+		    	//enables visiblity on new sky and disables old sky
+		    	skyPrev.setAttribute('visible', false);
+		        skyCur.setAttribute('visible', true);
+
+		        //console.log("Sky:"+skyCur);
+		        //console.log("Description:"+descCur.getAttribute('visible'));
+
+		    	//enables visiblity on new description and disables the old description
+		    	descPrev.setAttribute('visible', false);
+		        descCur.setAttribute('visible', true);
+
+		        //enables visibility on cur poi entitity and disables it on the prev
+		        poiEntityPrev.setAttribute('visible', false);
+		        poiEntityCur.setAttribute('visible', true)
+		    });
+		  }
+		});
+  	</script>
+
+  	<script>
+  		
+		AFRAME.registerComponent('click-handler', {
+		  schema: {
+		    on: {type: 'string'},
+		    target: {type: 'selector'},
+		    onOff: {type: 'boolean'}
+		  },
+
+		  init: function () {
+			var data = this.data;
+			var el = this.el;
+
+			console.log("HERE");
+
+			//makes cursor pulse if it is in the interaction zone
+		    el.addEventListener('mouseenter', function(){
+		    	cursor.emit('pulse');
+		    });
+
+		    //places mouse back to normal if it leaves the interaction zone
+		   	el.addEventListener('mouseleave', function(){
+		    	cursor.emit('normal');
+		    });
+
+		   	//turns target on/off when the given event occurs
+			el.addEventListener(data.on, function () {
+
+				console.log("target:"+data.target);
+				console.log("Close/Open:"+data.onOff);
+
+				data.target.setAttribute('visible', data.onOff);
+			});
+		  }
+		 });
+  	</script>
+
+    <a-scene>
+
+    <a-asset>
+
+    	<!--The image for the forward and backward button-->
+   		<img id="fb-button" crossorigin="anonymous" src="./Textures/api_360/logo_black.png"></img>
+		
+    </a-asset>
+
+    <!--create another component that listens for the poi to be clicked and has each poi associated with a description that will pop up or the description can be on the HUD-->
+    <a-entity id="printingPOI" visible="false">
+	    <!--Think about putting the image as an asset to cache it-->
+	    <a-image class="clickable" id="poiPrinting1" src="./Textures/api_360/poi.png" rotation="0 -50 0" position="32 .5 -8" scale="2.5 2.5 2.5" transparent="true" visible="true" 
+	    click-handler="on: click; target: #info1; onOff: true"></a-image>
+	    <a-plane id="info1" position="29 -2 -3" rotation="0 290 0" scale="6 10 1" src="./Textures/api_360/poiText1.png" visible="false">
+	    	<a-image class="clickable" src="./Textures/api_360/exit.png" position=".36 .384 .208" scale=".3 .3 .3" visible="true" click-handler="on: click; target: #info1; onOff: false"></a-image>
+	    </a-plane>
+
+	    <a-image class="clickable" id="poiPrinting2" src="./Textures/api_360/poi.png" rotation="0 35 0" position="-9 -2 -17" scale="2 2 2" transparent="true" visible="true" click-handler="on: click; target: #info2; onOff: true"></a-image>
+	    <a-plane id="info2" position="-13 -2 -16" rotation="0 35 0" scale="6 10 1" src="./Textures/api_360/poiText2.png" visible="false">
+	    	<a-image class="clickable" src="./Textures/api_360/exit.png" position=".36 .384 .208" scale=".3 .3 .3" visible="true" click-handler="on: click; target: #info2; onOff: false"></a-image>
+	    </a-plane>
+
+	</a-entity>
+
+	<a-entity id="boxingPOI" visible="false"></a-entity>
+	<a-entity id="paintPOI" visible="false"></a-entity>
+	<a-emtity id="screenWashPOI" visible="false"></a-emtity>
+
+    <a-sky id="boxing" radius="100" src="./Textures/api_360/R0010413_logo.jpg" rotation="0 -90 0" position="0 0 0" visible="true"></a-sky>
+	<a-plane id="boxDesc" src="./Textures/api_360/boxText.png" position="0 -.5 -1.9" rotation="-45 0 0" scale="1.5 1.5 1.5" shader="flat" transparent="true"></a-plane>
+		
+	<a-sky id="paint" radius="100" src="./Textures/api_360/R0010414_logo.jpg" rotation="0 -90 0" position="0 0 0" visible="false"></a-sky>
+	<a-plane id="paintDesc" src="./Textures/api_360/paintText.png" position="0 -.5 -1.9" rotation="-45 0 0" scale="1.5 1.5 1.5" shader="flat" visible="false" transparent="true"></a-plane>
+
+	<a-sky id="screenWash" radius="100" src="./Textures/api_360/R0010414_logo-1.jpg" rotation="0 -90 0" position="0 0 0" visible="false"></a-sky>
+	<a-plane id="screenWashDesc" src="./Textures/api_360/screenText.png" position="0 -.5 -1.9" rotation="-45 0 0" scale="1.5 1.5 1.5" shader="flat" visible="false" transparent="true"></a-plane>
+
+	<a-sky id="printing" radius="100" src="./Textures/api_360/R0010414_logo-2.jpg" rotation="0 -90 0" position="0 0 0" visible="false"></a-sky>
+	<a-plane id="printingDesc" src="./Textures/api_360/printingText.png" position="0 -.5 -1.9" rotation="-45 0 0" scale="1.5 1.5 1.5" shader="flat" visible="false" transparent="true"></a-plane>
+
+    <!-- Camera and its anmation component -->
+    <a-camera id="Camera" position="0 0 0" wasd-controls-enabled="false">
+    	<a-cursor id="cursor"
+          fuse="true"
+          raycaster="objects: .clickable" scale='.7 .7 .7' color="red">
+          <a-animation attribute="scale" from="1 1 1" to="2 2 2" dur="400" direction="alternate" repeat="3" begin="pulse" end="normal" easing="ease-in"></a-animation>
+          <a-animation attribute="scale" to="1 1 1" begin="normal" easing="ease-in"></a-animation>
+          </a-cursor>
+    </a-camera>
+
+  	<!--The plane that has the forward and backward images-->
+  	<a-plane id="next" class="clickable" src="#fb-button" position="1 -.5 -1.9" rotation="-45 0 0" scale=".5 1 1" shader="flat" set-image="on: click; dir:1" transparent="true"></a-plane>
+  	<a-plane id="prev" class="clickable" src="#fb-button" position="-1 -.5 -1.9" rotation="-45 0 180" scale=".5 1 1" shader="flat" set-image="on: click; dir: -1" transparent="true"></a-plane>
+
+  	<a-image id="welcome" src="./Textures/api_360/instructions.png" position="0 1.6 -2" scale="2 1 1" transparent="true">
+  		<a-image class="clickable" src="./Textures/api_360/exit.png" position=".458 .45 .01" scale=".1 .1 .1" visible="true" transparent="false" click-handler="on: click; target: #welcome; onOff: false"></a-image>
+  	</a-image>
+
+    </a-scene>
+  </body>
+</html>
